@@ -145,6 +145,11 @@ var (
 		Usage: "Max connection `<number>` in bound for single ip",
 		Value: config.DEFAULT_MAX_CONN_IN_BOUND_FOR_SINGLE_IP,
 	}
+	CertPathFlag = cli.StringFlag{
+		Name:  "cert-path",
+		Usage: "cert path for node",
+		Value: config.DEFAULT_CERT_PATH,
+	}
 	// RPC settings
 	RPCDisabledFlag = cli.BoolFlag{
 		Name:  "disable-rpc",

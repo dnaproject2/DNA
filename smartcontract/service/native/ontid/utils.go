@@ -21,12 +21,12 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"github.com/ontio/ontology-crypto/keypair"
 	com "github.com/dnaproject2/DNA/common"
 	"github.com/dnaproject2/DNA/core/states"
 	"github.com/dnaproject2/DNA/core/types"
 	"github.com/dnaproject2/DNA/smartcontract/service/native"
 	"github.com/dnaproject2/DNA/smartcontract/service/native/utils"
+	"github.com/ontio/ontology-crypto/keypair"
 )
 
 func checkIDExistence(srvc *native.NativeService, encID []byte) bool {

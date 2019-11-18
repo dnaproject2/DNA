@@ -26,7 +26,7 @@ import (
 
 	"github.com/dnaproject2/DNA/common"
 	"github.com/dnaproject2/DNA/common/serialization"
- 	"github.com/dnaproject2/DNA/core/signature"
+	"github.com/dnaproject2/DNA/core/signature"
 	"github.com/dnaproject2/DNA/core/types"
 	"github.com/dnaproject2/DNA/errors"
 	scommon "github.com/dnaproject2/DNA/smartcontract/common"

@@ -109,6 +109,7 @@ func setupAPP() *cli.App {
 		utils.MaxConnInBoundFlag,
 		utils.MaxConnOutBoundFlag,
 		utils.MaxConnInBoundForSingleIPFlag,
+		utils.CertPathFlag,
 		//test mode setting
 		utils.EnableTestModeFlag,
 		utils.TestModeGenBlockTimeFlag,
@@ -452,8 +453,8 @@ func waitToExit(db *ledger.Ledger) {
 	go func() {
 		for sig := range sc {
 			log.Infof("DNA received exit signal:%v.", sig.String())
- 			log.Infof("closing ledger...")
- 			db.Close()
+			log.Infof("closing ledger...")
+			db.Close()
 			close(exit)
 			break
 		}

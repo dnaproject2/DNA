@@ -19,7 +19,7 @@
 package neovm
 
 import (
- 	"github.com/dnaproject2/DNA/common/config"
+	"github.com/dnaproject2/DNA/common/config"
 	"github.com/dnaproject2/DNA/vm/neovm/errors"
 )
 

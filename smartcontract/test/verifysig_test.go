@@ -20,7 +20,6 @@ package test
 
 import (
 	"fmt"
-	"github.com/ontio/ontology-crypto/keypair"
 	"github.com/dnaproject2/DNA/account"
 	"github.com/dnaproject2/DNA/common"
 	"github.com/dnaproject2/DNA/core/signature"
@@ -28,6 +27,7 @@ import (
 	svm "github.com/dnaproject2/DNA/smartcontract/service/neovm"
 	"github.com/dnaproject2/DNA/vm/neovm"
 	vtypes "github.com/dnaproject2/DNA/vm/neovm/types"
+	"github.com/ontio/ontology-crypto/keypair"
 	"testing"
 )
 

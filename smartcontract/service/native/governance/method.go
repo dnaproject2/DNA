@@ -99,12 +99,6 @@ func registerCandidate(native *native.NativeService, flag string) error {
 		return fmt.Errorf("putPeerPoolMap, put peerPoolMap error: %v", err)
 	}
 
-	//get globalParam
-	globalParam, err := getGlobalParam(native, contract)
-	if err != nil {
-		return fmt.Errorf("getGlobalParam, getGlobalParam error: %v", err)
-	}
-
 	switch flag {
 	case "transfer":
 		//ont transfer
@@ -112,23 +106,11 @@ func registerCandidate(native *native.NativeService, flag string) error {
 		if err != nil {
 			return fmt.Errorf("appCallTransferOnt, ont transfer error: %v", err)
 		}
-
-		//ong transfer
-		err = appCallTransferOng(native, params.Address, utils.GovernanceContractAddress, globalParam.CandidateFee)
-		if err != nil {
-			return fmt.Errorf("appCallTransferOng, ong transfer error: %v", err)
-		}
 	case "transferFrom":
 		//ont transfer from
 		err = appCallTransferFromOnt(native, utils.GovernanceContractAddress, params.Address, utils.GovernanceContractAddress, uint64(params.InitPos))
 		if err != nil {
 			return fmt.Errorf("appCallTransferFromOnt, ont transfer error: %v", err)
-		}
-
-		//ong transfer from
-		err = appCallTransferFromOng(native, utils.GovernanceContractAddress, params.Address, utils.GovernanceContractAddress, globalParam.CandidateFee)
-		if err != nil {
-			return fmt.Errorf("appCallTransferFromOng, ong transfer error: %v", err)
 		}
 	}
 

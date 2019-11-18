@@ -27,8 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dnaproject2/DNA/core/states"
-
 	"github.com/dnaproject2/DNA/smartcontract/service/native/governance"
 	"github.com/dnaproject2/DNA/smartcontract/service/native/utils"
 
@@ -36,7 +34,6 @@ import (
 	"github.com/dnaproject2/DNA/common/config"
 	"github.com/dnaproject2/DNA/common/log"
 	"github.com/dnaproject2/DNA/core/ledger"
-	scom "github.com/dnaproject2/DNA/core/store/common"
 	"github.com/dnaproject2/DNA/core/types"
 	actor "github.com/dnaproject2/DNA/p2pserver/actor/req"
 	msgCommon "github.com/dnaproject2/DNA/p2pserver/common"
@@ -393,18 +390,12 @@ func checkWhiteList(addr string) error {
 
 	// check governance storage
 	contract := utils.GovernanceContractAddress
-	key := utils.ConcatKey(contract, []byte(governance.GOVERNANCE_VIEW))
-	key = append([]byte{byte(scom.ST_STORAGE)}, key...)
-	item, err := ledger.DefLedger.GetStorageItem(contract, key)
+	key := []byte(governance.GOVERNANCE_VIEW)
+	val, err := ledger.DefLedger.GetStorageItem(contract, key)
 	if err != nil {
 		return fmt.Errorf("get governance view error, %s", err)
-	} else if item == nil {
+	} else if val == nil {
 		return fmt.Errorf("governance view storage item is nil")
-	}
-
-	val, err := states.GetValueFromRawStorageItem(item)
-	if err != nil {
-		return fmt.Errorf("get item value error, %s", err)
 	}
 
 	view := governance.GovernanceView{}
@@ -417,18 +408,13 @@ func checkWhiteList(addr string) error {
 	if err != nil {
 		return err
 	}
-	key = utils.ConcatKey(contract, []byte(governance.PEER_POOL), viewBytes)
-	key = append([]byte{byte(scom.ST_STORAGE)}, key...)
-	item, err = ledger.DefLedger.GetStorageItem(contract, key)
+
+	key = append([]byte(governance.PEER_POOL), viewBytes...)
+	val, err = ledger.DefLedger.GetStorageItem(contract, key)
 	if err != nil {
 		return fmt.Errorf("get peer pool error, %s", err)
-	} else if item == nil {
+	} else if val == nil {
 		return fmt.Errorf("peer pool storage item is nil")
-	}
-
-	val, err = states.GetValueFromRawStorageItem(item)
-	if err != nil {
-		return fmt.Errorf("peer pool item value error, %s", err)
 	}
 
 	peerPoolMap := &governance.PeerPoolMap{
@@ -440,7 +426,7 @@ func checkWhiteList(addr string) error {
 
 	for _, v := range peerPoolMap.PeerPoolMap {
 		log.Warn("peer pool:", v.Address.ToBase58())
-		if v.Status != 1 || v.Status != 2 {
+		if v.Status != governance.ConsensusStatus && v.Status != governance.CandidateStatus {
 			continue
 		}
 		if v.Address.ToBase58() == addr {
@@ -448,7 +434,7 @@ func checkWhiteList(addr string) error {
 		}
 	}
 
-	return fmt.Errorf("not in the whitelist")
+	return fmt.Errorf("%s not in the whitelist", addr)
 }
 
 // VerAckHandle handles the version ack from peer
@@ -747,10 +733,17 @@ func GetHeadersFromHash(startHash common.Uint256, stopHash common.Uint256) ([]*t
 	var i uint32
 	for i = 1; i <= count; i++ {
 		hash := ledger.DefLedger.GetBlockHash(stopHeight + i)
-		hd, err := ledger.DefLedger.GetRawHeaderByHash(hash)
+		header, err := ledger.DefLedger.GetHeaderByHash(hash)
 		if err != nil {
 			log.Debugf("[p2p]net_server GetBlockWithHeight failed with err=%s, hash=%x,height=%d\n", err.Error(), hash, stopHeight+i)
 			return nil, err
+		}
+		sink := common.NewZeroCopySink(nil)
+		header.Serialization(sink)
+
+		hd := &types.RawHeader{
+			Height:  header.Height,
+			Payload: sink.Bytes(),
 		}
 		headers = append(headers, hd)
 	}
